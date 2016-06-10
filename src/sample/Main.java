@@ -1,5 +1,7 @@
 package sample;
 
+import java.io.IOException;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -15,6 +17,13 @@ public class Main extends Application {
         primaryStage.setScene(new Scene(root, 300, 275));
         primaryStage.sizeToScene();
         primaryStage.show();
+        primaryStage.setOnCloseRequest(event -> {
+            try {
+                MainController.saveStatus();
+            } catch (IOException e) {
+                System.out.println("Status not saved");
+            }
+        });
     }
 
 

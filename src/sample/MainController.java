@@ -1,12 +1,11 @@
 package sample;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,11 +14,11 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.AnchorPane;
 
 public class MainController {
     private static final String TASKS_PATH = ".tasks";
-    private Tasks tasks = null;
-    private ObservableList<String> taskNameList = FXCollections.observableArrayList();
+    private static Tasks tasks = null;
 
     @FXML
     public ListView taskListView;
@@ -29,10 +28,11 @@ public class MainController {
     public Button resetButton;
     @FXML
     public Button uncheckButton;
-
     @FXML
-    public static List<Task> parseTasks(String input) {
-        List<Task> list = new ArrayList<>();
+    public AnchorPane mainScene;
+    @FXML
+    public static HashMap<String, Task> parseTasks(String input) {
+        HashMap<String, Task> map = new HashMap<>();
         String pattern = "([^#]*)#([tf])";
         Pattern r = Pattern.compile(pattern);
         Matcher m = r.matcher(input);
@@ -46,9 +46,9 @@ public class MainController {
             } else {
                 continue;
             }
-            list.add(new Task(taskName, taskChecked));
+            map.put(taskName, new Task(taskName, taskChecked));
         }
-        return list;
+        return map;
     }
 
     @FXML
@@ -60,12 +60,8 @@ public class MainController {
             while((line = br.readLine()) != null) {
                 input += line.trim();
             }
-            this.tasks = new Tasks(parseTasks(input.trim()));
-            for (Task task : this.tasks.getTaskList()) {
-                this.taskNameList.add(task.description);
-                System.out.println(task.description);
-            }
-            this.taskListView.setItems(taskNameList);
+            tasks = new Tasks(parseTasks(input.trim()));
+            this.update();
         } catch (FileNotFoundException e) {
             System.out.println("Tasks file not found at " + TASKS_PATH);
             System.exit(0);
@@ -76,16 +72,51 @@ public class MainController {
 
     @FXML
     public void onCheckButtonClick() {
-        System.out.println("check");
+        ObservableList<String> selectedList = taskListView.getSelectionModel().getSelectedItems();
+        for (String string : selectedList) {
+            tasks.check(string);
+        }
+        this.update();
     }
 
     @FXML
     public void onResetButtonClick() {
-        System.out.println("reset");
+        tasks.reset();
+        this.update();
     }
 
     @FXML
     public void onUncheckButtonClick() {
         System.out.println("uncheck");
+    }
+
+    private void update() {
+        ObservableList<String> taskNameList = FXCollections.observableArrayList();
+        for (Task task : tasks.getTaskDict().values()) {
+            if (!task.checked) {
+                taskNameList.add(task.description);
+            }
+        }
+        tasks.getTaskDict().values().stream()
+                .filter(task -> !task.checked)
+                .map(task -> {
+                    taskNameList.add(task.description);
+                    return task;
+                });
+        this.taskListView.setItems(taskNameList);
+    }
+
+    public static void saveStatus() throws IOException {
+        FileWriter fw = new FileWriter(TASKS_PATH, false);
+        System.out.print(tasks.getTaskDict().keySet().size());
+        for (String taskName : tasks.getTaskDict().keySet()) {
+            fw.write(taskName);
+            if (tasks.getTaskDict().get(taskName).checked) {
+                fw.write("#t");
+            } else {
+                fw.write("#f");
+            }
+        }
+        fw.close();
     }
 }

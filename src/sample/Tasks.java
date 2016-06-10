@@ -1,36 +1,32 @@
 package sample;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
-/**
- * Created by duotao on 6/10/16.
- */
 public class Tasks {
-    private List<Task> taskList;
+    private HashMap<String, Task> taskDict;
 
     public Tasks() {
-        this.taskList = new ArrayList<>();
+        this.taskDict = new HashMap<>();
     }
 
-    public Tasks(List<Task> tasks) {
-        this.taskList = tasks;
+    public Tasks(HashMap<String, Task> tasks) {
+        this.taskDict = tasks;
     }
 
-    public List<Task> getTaskList() {
-        return this.taskList;
+    public HashMap<String, Task> getTaskDict() {
+        return this.taskDict;
     }
 
-    public void check(int index) {
-        this.taskList.get(index).checked = true;
+    public void check(String taskName) {
+        this.taskDict.get(taskName).checked = true;
     }
 
-    public void uncheck(int index) {
-        this.taskList.get(index).checked = false;
+    public void uncheck(String taskName) {
+        this.taskDict.get(taskName).checked = false;
     }
 
     public void reset() {
-        for (Task t : this.taskList) {
+        for (Task t : this.taskDict.values()) {
             t.checked = false;
         }
     }
