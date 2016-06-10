@@ -18,7 +18,7 @@
                <children>
                   <Button fx:id="checkButton" mnemonicParsing="false" onAction="#onCheckButtonClick" text="Check" />
                   <Button fx:id="resetButton" mnemonicParsing="false" onAction="#onResetButtonClick" text="Reset" />
-                  <Button fx:id="editButton" mnemonicParsing="false" onAction="#onEditButtonClick" text="Edit" />
+                  <Button fx:id="editButton" disable="true" mnemonicParsing="false" onAction="#onEditButtonClick" text="Edit" />
                </children>
             </HBox>
          </children>

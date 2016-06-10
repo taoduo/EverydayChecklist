@@ -6,20 +6,20 @@
 <?import javafx.scene.layout.*?>
 
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.EditController">
    <children>
       <VBox prefHeight="100.0" prefWidth="300.0" spacing="5.0">
          <children>
             <VBox>
                <children>
                   <Label text="New Description" />
-                  <TextField />
+                  <TextField fx:id="editText" />
                </children>
             </VBox>
             <HBox alignment="TOP_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
                <children>
-                  <Button mnemonicParsing="false" text="Cancel" />
-                  <Button mnemonicParsing="false" text="Save" />
+                  <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#onCancelButtonClick" text="Cancel" />
+                  <Button fx:id="saveButton" mnemonicParsing="false" onAction="#onSaveButtonClick" text="Save" />
                </children>
             </HBox>
          </children>

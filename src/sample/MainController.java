@@ -24,7 +24,8 @@ public class MainController {
     private static final String TASKS_PATH = ".tasks";
     private static final int EDIT_WINDOW_WIDTH = 300;
     private static final int EDIT_WINDOW_HEIGHT = 100;
-    private static Tasks tasks = null;
+    public static Tasks tasks = null;
+    public static String currentSelectedText;
 
     @FXML
     public ListView taskListView;
@@ -33,9 +34,12 @@ public class MainController {
     @FXML
     public Button resetButton;
     @FXML
-    public AnchorPane mainScene;
+    public Button editButton;
     @FXML
-    public static HashMap<String, Task> parseTasks(String input) {
+    public AnchorPane mainScene;
+
+
+    private static HashMap<String, Task> parseTasks(String input) {
         HashMap<String, Task> map = new HashMap<>();
         String pattern = "([^#]*)#([tf])";
         Pattern r = Pattern.compile(pattern);
@@ -66,6 +70,16 @@ public class MainController {
             }
             tasks = new Tasks(parseTasks(input.trim()));
             this.update();
+            this.taskListView.getSelectionModel().selectedItemProperty().addListener(event->{
+                if (this.taskListView.getSelectionModel().getSelectedIndices().size() != 0) {
+                    this.editButton.setDisable(false);
+                    this.currentSelectedText = (String) this.taskListView.getSelectionModel()
+                            .getSelectedItems().get(0);
+                } else {
+                    this.editButton.setDisable(true);
+                    this.currentSelectedText = null;
+                }
+            });
         } catch (FileNotFoundException e) {
             System.out.println("Tasks file not found at " + TASKS_PATH);
             System.exit(0);
@@ -90,8 +104,9 @@ public class MainController {
     }
 
     @FXML
-    public void onEditButtonClick() throws IOException{
-        Parent root = FXMLLoader.load(getClass().getResource("EditView.fxml"));
+    public void onEditButtonClick() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("EditView.fxml"));
+        Parent root = loader.load();
         Stage editStage = new Stage();
         editStage.setTitle("Edit Tasks");
         editStage.setScene(new Scene(
@@ -100,9 +115,12 @@ public class MainController {
         editStage.setResizable(false);
         editStage.initOwner(this.taskListView.getScene().getWindow());
         editStage.show();
+        ((EditController) loader.getController()).setEditText((String) this.taskListView.
+                getSelectionModel().getSelectedItem());
+        EditController.mainController = this;
     }
 
-    private void update() {
+    public void update() {
         ObservableList<String> taskNameList = FXCollections.observableArrayList();
         for (Task task : tasks.getTaskDict().values()) {
             if (!task.checked) {
