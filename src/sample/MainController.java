@@ -18,6 +18,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
@@ -124,21 +125,24 @@ public class MainController {
         ((EditController) loader.getController()).setEditText((String) this.taskListView.
                 getSelectionModel().getSelectedItem());
         EditController.mainController = this;
+        editStage.getIcons().add(new Image("file:favicon.jpg"));
+
     }
 
     @FXML
     public void onAddButtonClick() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("AddView.fxml"));
         Parent root = loader.load();
-        Stage editStage = new Stage();
-        editStage.setTitle("Add Task");
-        editStage.setScene(new Scene(
+        Stage addStage = new Stage();
+        addStage.setTitle("Add Task");
+        addStage.setScene(new Scene(
                 root, EDIT_WINDOW_WIDTH, EDIT_WINDOW_HEIGHT));
-        editStage.sizeToScene();
-        editStage.setResizable(false);
-        editStage.initOwner(this.taskListView.getScene().getWindow());
-        editStage.show();
+        addStage.sizeToScene();
+        addStage.setResizable(false);
+        addStage.initOwner(this.taskListView.getScene().getWindow());
+        addStage.show();
         AddController.mainController = this;
+        addStage.getIcons().add(new Image("file:favicon.jpg"));
     }
 
     @FXML
