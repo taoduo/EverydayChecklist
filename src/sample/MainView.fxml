@@ -11,7 +11,7 @@
          <children>
             <VBox prefHeight="200.0" prefWidth="217.0">
                <children>
-                  <Label text="Tasks" />
+                  <Label fx:id="titleLabel" text="Tasks"/>
                   <ListView fx:id="taskListView" prefHeight="200.0" prefWidth="200.0">
                      <VBox.margin>
                         <Insets bottom="10.0" />

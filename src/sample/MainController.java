@@ -2,10 +2,12 @@ package sample;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,6 +19,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
@@ -28,7 +31,8 @@ public class MainController {
     private static final int EDIT_WINDOW_HEIGHT = 100;
     public static Tasks tasks = null;
     public static String currentSelectedText;
-
+    @FXML
+    public Label titleLabel;
     @FXML
     public ListView taskListView;
     @FXML
@@ -93,6 +97,9 @@ public class MainController {
                     this.resetButton.fire();
             }
         });
+        DateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy");
+        Date date = new Date();
+        titleLabel.setText(titleLabel.getText() + " as of " + dateFormat.format(date));
     }
 
     @FXML
