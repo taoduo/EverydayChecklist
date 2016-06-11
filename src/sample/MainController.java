@@ -120,6 +120,20 @@ public class MainController {
         EditController.mainController = this;
     }
 
+    @FXML
+    public void onAddButtonClick() {
+        System.out.println("add");
+    }
+
+    @FXML
+    public void onDeleteButtonClick() {
+        ObservableList<String> selectedList = taskListView.getSelectionModel().getSelectedItems();
+        for (String string : selectedList) {
+            tasks.delete(string);
+        }
+        this.update();
+    }
+
     public void update() {
         ObservableList<String> taskNameList = FXCollections.observableArrayList();
         for (Task task : tasks.getTaskDict().values()) {

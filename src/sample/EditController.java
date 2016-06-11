@@ -6,9 +6,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
-/**
- * Created by duotao on 6/10/16.
- */
 public class EditController {
     @FXML
     public TextField editText;

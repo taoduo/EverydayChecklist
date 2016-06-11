@@ -31,5 +31,7 @@ public class Tasks {
         }
     }
 
-
+    public void delete(String task) {
+        this.taskDict.remove(task);
+    }
 }
