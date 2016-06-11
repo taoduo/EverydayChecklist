@@ -18,11 +18,10 @@ public class Tasks {
     }
 
     public void check(String taskName) {
+        if (taskName == null) {
+            return;
+        }
         this.taskDict.get(taskName).checked = true;
-    }
-
-    public void uncheck(String taskName) {
-        this.taskDict.get(taskName).checked = false;
     }
 
     public void reset() {
@@ -32,6 +31,9 @@ public class Tasks {
     }
 
     public void delete(String task) {
+        if (task == null) {
+            return;
+        }
         this.taskDict.remove(task);
     }
 }

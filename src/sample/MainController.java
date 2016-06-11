@@ -73,11 +73,21 @@ public class MainController {
             this.taskListView.getSelectionModel().selectedItemProperty().addListener(event->{
                 if (this.taskListView.getSelectionModel().getSelectedIndices().size() != 0) {
                     this.editButton.setDisable(false);
-                    this.currentSelectedText = (String) this.taskListView.getSelectionModel()
+                    currentSelectedText = (String) this.taskListView.getSelectionModel()
                             .getSelectedItems().get(0);
                 } else {
                     this.editButton.setDisable(true);
-                    this.currentSelectedText = null;
+                    currentSelectedText = null;
+                }
+            });
+            this.taskListView.setOnKeyTyped(event -> {
+                String c = event.getCharacter();
+                switch (c) {
+                    case " ":
+                        this.checkButton.fire();
+                        break;
+                    case "r":
+                        this.resetButton.fire();
                 }
             });
         } catch (FileNotFoundException e) {
@@ -108,7 +118,7 @@ public class MainController {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("EditView.fxml"));
         Parent root = loader.load();
         Stage editStage = new Stage();
-        editStage.setTitle("Edit Tasks");
+        editStage.setTitle("Edit Task");
         editStage.setScene(new Scene(
                 root, EDIT_WINDOW_WIDTH, EDIT_WINDOW_HEIGHT));
         editStage.sizeToScene();
@@ -121,8 +131,18 @@ public class MainController {
     }
 
     @FXML
-    public void onAddButtonClick() {
-        System.out.println("add");
+    public void onAddButtonClick() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("AddView.fxml"));
+        Parent root = loader.load();
+        Stage editStage = new Stage();
+        editStage.setTitle("Add Task");
+        editStage.setScene(new Scene(
+                root, EDIT_WINDOW_WIDTH, EDIT_WINDOW_HEIGHT));
+        editStage.sizeToScene();
+        editStage.setResizable(false);
+        editStage.initOwner(this.taskListView.getScene().getWindow());
+        editStage.show();
+        AddController.mainController = this;
     }
 
     @FXML
