@@ -1,6 +1,7 @@
 package sample;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -60,42 +61,37 @@ public class MainController {
     }
 
     @FXML
-    public void initialize() {
-        try {
-            FileReader fr = new FileReader(TASKS_PATH);
-            BufferedReader br = new BufferedReader(fr);
-            String input = "", line;
-            while((line = br.readLine()) != null) {
-                input += line.trim();
-            }
-            tasks = new Tasks(parseTasks(input.trim()));
-            this.update();
-            this.taskListView.getSelectionModel().selectedItemProperty().addListener(event->{
-                if (this.taskListView.getSelectionModel().getSelectedIndices().size() != 0) {
-                    this.editButton.setDisable(false);
-                    currentSelectedText = (String) this.taskListView.getSelectionModel()
-                            .getSelectedItems().get(0);
-                } else {
-                    this.editButton.setDisable(true);
-                    currentSelectedText = null;
-                }
-            });
-            this.taskListView.setOnKeyTyped(event -> {
-                String c = event.getCharacter();
-                switch (c) {
-                    case " ":
-                        this.checkButton.fire();
-                        break;
-                    case "r":
-                        this.resetButton.fire();
-                }
-            });
-        } catch (FileNotFoundException e) {
-            System.out.println("Tasks file not found at " + TASKS_PATH);
-            System.exit(0);
-        } catch (IOException e) {
-            System.out.println("Error reading the file " + TASKS_PATH);
+    public void initialize() throws IOException {
+        File f = new File(TASKS_PATH);
+        f.createNewFile();
+        FileReader fr = new FileReader(f);
+        BufferedReader br = new BufferedReader(fr);
+        String input = "", line;
+        while ((line = br.readLine()) != null) {
+            input += line.trim();
         }
+        tasks = new Tasks(parseTasks(input.trim()));
+        this.update();
+        this.taskListView.getSelectionModel().selectedItemProperty().addListener(event -> {
+            if (this.taskListView.getSelectionModel().getSelectedIndices().size() != 0) {
+                this.editButton.setDisable(false);
+                currentSelectedText = (String) this.taskListView.getSelectionModel()
+                        .getSelectedItems().get(0);
+            } else {
+                this.editButton.setDisable(true);
+                currentSelectedText = null;
+            }
+        });
+        this.taskListView.setOnKeyTyped(event -> {
+            String c = event.getCharacter();
+            switch (c) {
+                case " ":
+                    this.checkButton.fire();
+                    break;
+                case "r":
+                    this.resetButton.fire();
+            }
+        });
     }
 
     @FXML
