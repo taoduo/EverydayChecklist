@@ -6,8 +6,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,6 +21,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -25,10 +29,16 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
+/**
+ * Controller for the Main window Author: Duo Tao June 12, 2016
+ */
 public class MainController {
     private static final String TASKS_PATH = ".tasks";
     private static final int EDIT_WINDOW_WIDTH = 300;
     private static final int EDIT_WINDOW_HEIGHT = 100;
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MMM dd, yyyy");
+    private static int daysKept = 0;
+    private static Calendar previousCompleteDate = new GregorianCalendar();
     public static Tasks tasks = null;
     public static String currentSelectedText;
     @FXML
@@ -44,12 +54,68 @@ public class MainController {
     @FXML
     public AnchorPane mainScene;
 
+    /**
+     * Show a congratulations message upon completing all tasks of today
+     */
+    private static void showCompleteAlert() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setHeaderText(daysKept + " days of tasks complete!");
+        alert.setContentText("You have persisted to your plan for " + daysKept + " days.\nKeep it up! You can do it!");
+        alert.showAndWait();
+    }
 
+    /**
+     * Handle behaviors on all task for today completed
+     */
+    private static void tasksComplete() {
+        Calendar now = new GregorianCalendar();
+        // if previous date is not today
+        if (!(now.get(Calendar.YEAR) == previousCompleteDate.get(Calendar.YEAR) &&
+                now.get(Calendar.MONTH) == previousCompleteDate.get(Calendar.MONTH) &&
+                now.get(Calendar.DATE) == previousCompleteDate.get(Calendar.DATE))) {
+            now.add(Calendar.DATE, -1);
+            // if previous date is yesterday
+            if (now.get(Calendar.YEAR) == previousCompleteDate.get(Calendar.YEAR) &&
+                    now.get(Calendar.MONTH) == previousCompleteDate.get(Calendar.MONTH) &&
+                    now.get(Calendar.DATE) == (previousCompleteDate.get(Calendar.DATE))) {
+                daysKept++;
+            } else {
+                daysKept = 1;
+            }
+            previousCompleteDate = new GregorianCalendar();
+            showCompleteAlert();
+        }
+    }
+
+    /**
+     * parse the .task file and get three configs from it: previous completed day, how many days are
+     * kept and the task status for today
+     *
+     * @param input the input text
+     * @return the constructed HashMap of the tasks
+     */
     private static HashMap<String, Task> parseTasks(String input) {
+        String[] split = input.split("\\n");
+        // get the previous day
+        String previousDateString = split[0];
+        try {
+            previousCompleteDate.setTime(DATE_FORMAT.parse(previousDateString));
+        } catch (ParseException e) {
+            previousCompleteDate = new GregorianCalendar();
+            e.printStackTrace();
+        }
+        // get the days kept
+        String daysKeptString = split[1];
+        Matcher dm = Pattern.compile("DAYS_KEPT=([0-9]+)").matcher(daysKeptString);
+        if (dm.find()) {
+            daysKept = Integer.parseInt(dm.group(1));
+        }
+        // get the tasks
+        String taskString = split[2];
         HashMap<String, Task> map = new HashMap<>();
         String pattern = "([^#]*)#([tf])";
         Pattern r = Pattern.compile(pattern);
-        Matcher m = r.matcher(input);
+        Matcher m = r.matcher(taskString);
         while (m.find()) {
             String taskName = m.group(1);
             boolean taskChecked;
@@ -73,7 +139,7 @@ public class MainController {
         BufferedReader br = new BufferedReader(fr);
         String input = "", line;
         while ((line = br.readLine()) != null) {
-            input += line.trim();
+            input += line.trim() + "\n";
         }
         tasks = new Tasks(parseTasks(input.trim()));
         this.update();
@@ -97,9 +163,8 @@ public class MainController {
                     this.resetButton.fire();
             }
         });
-        DateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy");
         Date date = new Date();
-        titleLabel.setText(titleLabel.getText() + " as of " + dateFormat.format(date));
+        titleLabel.setText(titleLabel.getText() + " as of " + DATE_FORMAT.format(date));
     }
 
     @FXML
@@ -109,6 +174,9 @@ public class MainController {
             tasks.check(string);
         }
         this.update();
+        if (tasks.isComplete()) {
+            tasksComplete();
+        }
     }
 
     @FXML
@@ -161,6 +229,9 @@ public class MainController {
         this.update();
     }
 
+    /**
+     * Update the views according to the task list
+     */
     public void update() {
         ObservableList<String> taskNameList = FXCollections.observableArrayList();
         for (Task task : tasks.getTaskDict().values()) {
@@ -177,8 +248,14 @@ public class MainController {
         this.taskListView.setItems(taskNameList);
     }
 
+    /**
+     * Save the status to the .task file on quit
+     * @throws IOException when the writing has some problem
+     */
     public static void saveStatus() throws IOException {
         FileWriter fw = new FileWriter(TASKS_PATH, false);
+        fw.write(DATE_FORMAT.format(previousCompleteDate.getTime()) + "\n");
+        fw.write("DAYS_KEPT=" + daysKept + "\n");
         for (String taskName : tasks.getTaskDict().keySet()) {
             fw.write(taskName);
             if (tasks.getTaskDict().get(taskName).checked) {

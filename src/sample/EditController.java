@@ -6,6 +6,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+/**
+ * Controller for the task edit window
+ */
 public class EditController {
     @FXML
     public TextField editText;
@@ -15,6 +18,7 @@ public class EditController {
     public Button saveButton;
     public static MainController mainController;
     private String initializeText;
+
     @FXML
     public void initialize() {
         this.initializeText = MainController.currentSelectedText;
@@ -35,6 +39,11 @@ public class EditController {
         stage.close();
     }
 
+    /**
+     * Get the original text from the main window
+     *
+     * @param initString the original text, passed from MainController
+     */
     public void setEditText(String initString) {
         this.editText.setText(initString);
         this.editText.selectAll();

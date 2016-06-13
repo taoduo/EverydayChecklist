@@ -6,6 +6,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+/**
+ * Controller for the add task window
+ */
 public class AddController {
     @FXML
     public TextField newTaskDesc;

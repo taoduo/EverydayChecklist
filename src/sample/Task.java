@@ -1,7 +1,9 @@
 package sample;
 
 /**
- * Created by duotao on 6/10/16.
+ * Class for a single task
+ * Author: Duo Tao
+ * June 12, 2016
  */
 public class Task {
     public String description;
