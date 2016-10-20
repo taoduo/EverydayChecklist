@@ -10,6 +10,7 @@ period of time. This application helps me keep track of what needs to be done to
 ![Main UI](./images/main.png)
 * Reset: reset today's tasks to start a new day
 * Check: complete this task
+
 ### Add A New Daily Task
 ![New Task](./images/new.png)
 ### Edit Daily Task
